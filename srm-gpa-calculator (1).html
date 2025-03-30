@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #03a9f4;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-card {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .gpa-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            background-color: rgba(74, 111, 165, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .form-row:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .form-row-header {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr auto;
+            gap: 1rem;
+            padding: 0 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.2);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0288d1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-remove {
+            background-color: transparent;
+            color: var(--error-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        .btn-remove:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.5s ease forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .credit-info {
+            text-align: center;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .credit-box {
+            background-color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .credit-box h3 {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .credit-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .form-row-header {
+                display: none;
+            }
+
+            .form-row input, .form-row select {
+                margin-bottom: 0.5rem;
+            }
+
+            .btn-remove {
+                margin: 0 auto;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GPA Calculator</h1>
+            <p>Calculate your GPA by adding your courses, credits, and grades</p>
+        </header>
+
+        <div class="card result-card scale-in">
+            <h2>Your Current GPA</h2>
+            <div class="gpa-display" id="gpaResult">0.00</div>
+            <div class="credit-info">
+                <div class="credit-box">
+                    <h3>Total Credits</h3>
+                    <div class="credit-value" id="totalCredits">0</div>
+                </div>
+                <div class="credit-box">
+                    <h3>Grade Points</h3>
+                    <div class="credit-value" id="totalPoints">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card scale-in">
+            <div class="form-row-header">
+                <div>Course Name</div>
+                <div>Credits</div>
+                <div>Grade</div>
+                <div></div>
+            </div>
+            <div id="coursesContainer">
+                <!-- Courses will be added here by JavaScript -->
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" id="addCourseBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add Course
+                </button>
+                <button class="btn btn-danger" id="resetBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                    Reset All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const coursesContainer = document.getElementById('coursesContainer');
+            const addCourseBtn = document.getElementById('addCourseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const gpaResult = document.getElementById('gpaResult');
+            const totalCreditsDisplay = document.getElementById('totalCredits');
+            const totalPointsDisplay = document.getElementById('totalPoints');
+
+            // SRM University Grading System
+            const gradePoints = {
+                'S': 10,
+                'A': 9,
+                'B': 8,
+                'C': 7,
+                'D': 6,
+                'E': 5,
+                'F': 0
+            };
+
+            // Add initial course row
+            addCourseRow();
+
+            // Event listeners
+            addCourseBtn.addEventListener('click', addCourseRow);
+            resetBtn.addEventListener('click', resetCalculator);
+            
+            // Add a course row function
+            function addCourseRow() {
+                const courseRow = document.createElement('div');
+                courseRow.className = 'form-row fade-in';
+                
+                courseRow.innerHTML = `
+                    <input type="text" class="course-name" placeholder="Course Name" required>
+                    <input type="number" class="credits" placeholder="Credits" min="1" max="5" required value="3">
+                    <select class="grade" required>
+                        <option value="" disabled selected>Grade</option>
+                        <option value="S">S (10)</option>
+                        <option value="A">A (9)</option>
+                        <option value="B">B (8)</option>
+                        <option value="C">C (7)</option>
+                        <option value="D">D (6)</option>
+                        <option value="E">E (5)</option>
+                        <option value="F">F (0)</option>
+                    </select>
+                    <button type="button" class="btn btn-remove remove-course">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </button>
+                `;
+                
+                coursesContainer.appendChild(courseRow);
+                
+                // Add event listeners to new inputs
+                const courseInputs = courseRow.querySelectorAll('input, select');
+                courseInputs.forEach(input => {
+                    input.addEventListener('input', calculateGPA);
+                });
+                
+                // Add event listener to remove button
+                const removeBtn = courseRow.querySelector('.remove-course');
+                removeBtn.addEventListener('click', function() {
+                    removeCourseRow(courseRow);
+                });
+                
+                // Focus on the course name input
+                courseRow.querySelector('.course-name').focus();
+            }
+            
+            // Remove a course row function
+            function removeCourseRow(courseRow) {
+                // Add the fade-out animation
+                courseRow.classList.remove('fade-in');
+                courseRow.classList.add('fade-out');
+                
+                // Wait for animation to complete before removing
+                setTimeout(() => {
+                    coursesContainer.removeChild(courseRow);
+                    calculateGPA();
+                    
+                    // If no courses left, add one
+                    if (coursesContainer.children.length === 0) {
+                        addCourseRow();
+                    }
+                }, 300);
+            }
+            
+            // Reset calculator function
+            function resetCalculator() {
+                // Clear all course rows
+                while (coursesContainer.firstChild) {
+                    coursesContainer.removeChild(coursesContainer.firstChild);
+                }
+                
+                // Add one empty row
+                addCourseRow();
+                
+                // Reset GPA display
+                gpaResult.textContent = '0.00';
+                totalCreditsDisplay.textContent = '0';
+                totalPointsDisplay.textContent = '0';
+                
+                // Add animation effect
+                gpaResult.classList.remove('scale-in');
+                void gpaResult.offsetWidth; // Trigger reflow
+                gpaResult.classList.add('scale-in');
+            }
+            
+            // Calculate GPA function
+            function calculateGPA() {
+                let totalCredits = 0;
+                let totalPoints = 0;
+                let validCourses = true;
+                
+                // Get all course rows
+                const courseRows = coursesContainer.querySelectorAll('.form-row');
+                
+                courseRows.forEach(row => {
+                    const credits = row.querySelector('.credits').value;
+                    const grade = row.querySelector('.grade').value;
+                    
+                    // Skip if data is incomplete
+                    if (!credits || !grade) {
+                        validCourses = false;
+                        return;
+                    }
+                    
+                    const creditValue = parseFloat(credits);
+                    const gradeValue = gradePoints[grade];
+                    
+                    totalCredits += creditValue;
+                    totalPoints += creditValue * gradeValue;
+                });
+                
+                // Calculate and display GPA
+                if (totalCredits > 0 && validCourses) {
+                    const gpa = totalPoints / totalCredits;
+                    gpaResult.textContent = gpa.toFixed(2);
+                    totalCreditsDisplay.textContent = totalCredits;
+                    totalPointsDisplay.textContent = totalPoints;
+                    
+                    // Add animation effect
+                    gpaResult.classList.remove('scale-in');
+                    void gpaResult.offsetWidth; // Trigger reflow
+                    gpaResult.classList.add('scale-in');
+                } else {
+                    gpaResult.textContent = '0.00';
+                    totalCreditsDisplay.textContent = '0';
+                    totalPointsDisplay.textContent = '0';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
